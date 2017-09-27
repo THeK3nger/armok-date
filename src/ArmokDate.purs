@@ -2,7 +2,9 @@ module ArmokDate where
 
 import Prelude
 
+import Control.Comonad (extract)
 import Data.Date (Date, Month(March), canonicalDate, day, diff, year)
+import Data.DateTime.Locale (LocalDate, LocalValue(..))
 import Data.Enum (fromEnum, toEnum)
 import Data.Int (floor)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe')
@@ -45,6 +47,9 @@ toAmrokMonth 11 = Just Opal
 toAmrokMonth 12 = Just Obsidian
 toAmrokMonth _ = Nothing
 
+extractDate :: LocalDate -> Date
+extractDate (LocalValue _  a) = a
+
 convert :: Date -> ArmokDate
 convert earthdate = { day: d, month: m, year: y}
     where
@@ -52,6 +57,9 @@ convert earthdate = { day: d, month: m, year: y}
         d = computeDay delta
         m = unsafePartial (fromJust ((toAmrokMonth <<< computeMonth) delta))
         y = (fromEnum (year earthdate)) - 2006
+
+convertLocal :: LocalDate -> ArmokDate
+convertLocal earthdate = convert (extract earthdate)
 
 showArmokMonth :: ArmokMonth -> String
 showArmokMonth Granite = "Granite"
@@ -75,6 +83,9 @@ daySuffix _ = "th"
 
 showArmokDate :: ArmokDate -> String
 showArmokDate date = (show date.day) <> (daySuffix date.day) <> " " <> showArmokMonth(date.month) <> ", " <> (show date.year)
+
+
+
 
 
 

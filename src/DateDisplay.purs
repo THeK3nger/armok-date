@@ -18,12 +18,14 @@ data Input a = Unit
 
 ui :: forall eff. H.Component HH.HTML Query Unit Void (Aff (now :: NOW | eff))
 ui =
-    H.component
+    H.lifecycleComponent
      {
          initialState: const initialState
          , render
          , eval
          , receiver: const Nothing
+         , initializer:  Just (H.action Regenerate)
+         , finalizer:  Just (H.action Regenerate)
      }
     where
         initialState :: State
@@ -36,9 +38,9 @@ ui =
             in
                  HH.div_ $ 
                  [ HH.h1_ [ HH.text string ]
-                 , HH.button
-                   [ HE.onClick (HE.input_ Regenerate) ]
-                   [ HH.text "Generate new number" ]
+                --  , HH.button
+                --    [ HE.onClick (HE.input_ Regenerate) ]
+                --    [ HH.text "Generate new number" ]
                  ]
 
         eval :: Query ~> H.ComponentDSL State Query Void (Aff (now :: NOW | eff))
